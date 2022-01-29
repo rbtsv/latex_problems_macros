@@ -1,0 +1,667 @@
+\documentclass[12pt]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}        % Кодировка входного документа;
+                                    % при необходимости, вместо cp1251
+                                    % можно указать cp866 (Alt-кодировка
+                                    % DOS) или koi8-r.
+
+\usepackage[english,russian]{babel} % Включение русификации, русских и
+                                    % английских стилей и переносов
+
+
+%%\usepackage{a4}
+%%\usepackage{moreverb}
+\usepackage{amsmath,amsfonts,amsthm,amssymb,amsbsy,amstext,amscd,amsxtra}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage[colorlinks,urlcolor=blue]{hyperref}
+\usepackage[stable]{footmisc}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Problems macros  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% Enumerations %%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Rnum}[1]{\expandafter{\romannumeral #1\relax}}
+\newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+
+%%%%%%%%%%%%%%%%%%%%% EOF Enumerations %%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{xparse}
+\usepackage{ifthen}
+\usepackage{bm} %%% bf in math mode
+\usepackage{color}
+
+\definecolor{Gray555}{HTML}{555555}
+\definecolor{Gray444}{HTML}{444444}
+\definecolor{Gray333}{HTML}{333333}
+
+
+\newcounter{problem}
+\newcounter{uproblem}
+\newcounter{kvproblem}
+\newcounter{subproblem}
+\newcounter{subrproblem}
+\renewcommand{\thesubrproblem}{\asbuk{subrproblem}}
+\newcounter{prvar}
+\newcounter{solvar}
+
+\def\slv{\noindent\stepcounter{solvar}{\bf\RNum{\thesolvar}}. \setcounter{prvar}{0}\setcounter{subproblem}{0}\setcounter{subrproblem}{0}}
+
+\def\solvend{\qed\bigskip}
+
+
+\usepackage{pgfkeys}
+
+
+\newcommand\prtemplate[2][]{%
+ \pgfkeys{/prtemplate,name,counter,label,display,type,footnote,#1,print}\ifthenelse{\equal{#2}{}}{}{#2 }% 
+}
+\pgfkeys{
+ /prtemplate/.is family, /prtemplate,
+ name/.default = {},
+ name/.store in = \prname,
+ label/.default = {},
+ label/.store in = \prlabel,
+ footnote/.default = {},
+ footnote/.store in = \prfootnote, 
+ counter/.default = {problem},
+ counter/.store in = \prcounter,
+ display/.store in=\prdisplay,
+ type/.default={},
+ type/.store in=\prtype,
+ print/.code =  {\ifthenelse{\equal{\prdisplay}{inline}}{}{\medskip\noindent}\ifthenelse{\equal{\prlabel}{}}{\stepcounter{\prcounter}}{\refstepcounter{\prcounter}\label{\prlabel}}{\bf \ifthenelse{\equal{\prname}{}}{}{\prname~}\prwrite[\prtype]\ifthenelse{\equal{\prfootnote}{}}{}{\footnote{\prfootnote}}.\;}\setcounter{subproblem}{0}\setcounter{subrproblem}{0}}}
+
+
+
+\newcommand{\prwrite}[1][]{\ifthenelse{\equal{#1}{star}}{$\mathbf{\arabic{\prcounter}}^{*}$}{\ifthenelse{\equal{#1}{o}}{$\mathbf{\arabic{\prcounter}}^{\circ}$}{\textbf{\arabic{\prcounter}}}}}
+
+
+\newcommand\prsubrtemplate[2][]{
+ \pgfkeys{/prsubrtemplate,label,display,type,#1,print}\ifthenelse{\equal{#2}{}}{}{#2 }% 
+}
+\pgfkeys{
+ /prsubrtemplate/.is family, /prsubrtemplate,
+ label/.default = {},
+ label/.store in = \prlabel,
+ display/.default={},
+ display/.store in=\prdisplay,
+ type/.default={},
+ type/.store in=\prstype,
+ print/.code =  {\ifthenelse{\equal{\prdisplay}{inline}}{}{\medskip\noindent}\ifthenelse{\equal{\prlabel}{}}{\stepcounter{subrproblem}}{\refstepcounter{subrproblem}\label{\prlabel}}{\bf \prsubrwrite[\prstype]\;}}
+}
+\newcommand{\prsubrwrite}[1][]{\ifthenelse{\equal{#1}{star}}{{\bf \asbuk{subrproblem})$^{*}$\!}}
+	{\ifthenelse{\equal{#1}{o}}{{\bf \asbuk{subrproblem})$^{\circ}$\!}}
+		{\textbf{\asbuk{subrproblem})}}}}
+
+\newcommand\prsubr[1][]{\prsubrtemplate[#1]{}}
+\newcommand\prsubru[1][]{\prsubrtemplate[#1,type=o]{}}
+\newcommand\prsubrinline[1][]{\prsubrtemplate[#1,display=inline]{}}
+\newcommand\prsubruinline[1][]{\prsubrtemplate[#1,type=o,display=inline]{}}
+\newcommand\prsubrstar[1][]{\prsubrtemplate[#1,type=star]{}}
+\newcommand\prsubrstarinline[1][]{\prsubrtemplate[#1,type=star,display=inline]{}}
+
+
+\newcommand\prsubtemplate[2][]{%
+ \pgfkeys{/prsubtemplate,label,display,type,#1,print}\ifthenelse{\equal{#2}{}}{}{#2 }% 
+}
+\pgfkeys{
+ /prsubtemplate/.is family, /prsubtemplate,
+ label/.default = {},
+ label/.store in = \prlabel,
+ display/.default={},
+ display/.store in=\prdisplay,
+ type/.default={},
+ type/.store in=\prstype,
+ print/.code =  {\ifthenelse{\equal{\prdisplay}{inline}}{}{\medskip\noindent}\ifthenelse{\equal{\prlabel}{}}{\stepcounter{subproblem}}{\refstepcounter{subproblem}\label{\prlabel}}\setcounter{subrproblem}{0}{\sf \prsubwrite[\prstype]\;}}
+}
+\newcommand{\prsubwrite}[1][]{\ifthenelse{\equal{#1}{star}}{{ $\mathsf{\thesubproblem}^*.$}}
+	{\ifthenelse{\equal{#1}{o}}{{$\mathsf{\thesubproblem}^{\circ}.$}}
+		{\thesubproblem.}}}
+
+\newcommand\prsub[1][]{\prsubtemplate[#1]{}}
+\newcommand\prsubu[1][]{\prsubtemplate[#1,type=o]{}}
+\newcommand\prsubinline[1][]{\prsubtemplate[#1,display=inline]{}}
+\newcommand\prsubuinline[1][]{\prsubtemplate[#1,type=o,display=inline]{}}
+\newcommand\prsubstar[1][]{\prsubtemplate[#1,type=star]{}}
+\newcommand\prsubstarinline[1][]{\prsubtemplate[#1,type=star,display=inline]{}}
+
+
+\newenvironment{quiz}[1][]{\prtemplate[name={Контрольный вопрос}, counter={kvproblem}, #1]{}}{\medskip}
+\newenvironment{upr}[1][]{\prtemplate[name={Упражнение}, counter={uproblem}, #1]{}}{\medskip}
+\newenvironment{problem}[1][]{\prtemplate[name={Задача}, counter={problem}, #1]{}}{\medskip}
+\newcommand\pr[1][]{\prtemplate[#1]{}}
+
+
+
+
+
+
+
+\def\prinline{\noindent\stepcounter{problem}{\bf \theproblem .\;}\setcounter{subproblem}{0}\setcounter{subrproblem}{0}}
+
+\def\pru{\pr[type=o]}
+\def\pruinline{\pr[type=o,display=inline]}
+\def\prstar{\pr[type=star]}
+\def\prpfrom[#1]{\medskip\noindent\stepcounter{problem}{\bf Задача \theproblem~(№#1 из задания).  }\setcounter{subproblem}{0}\setcounter{subrproblem}{0} }
+\def\prp{\medskip\noindent\stepcounter{problem}{\bf Задача \theproblem .}\setcounter{subproblem}{0}\setcounter{subrproblem}{0}\;}
+
+\def\prpvar{\medskip\noindent\stepcounter{problem}\setcounter{prvar}{1}\setcounter{solvar}{1}{\bf Задача \theproblem \;$\langle${\rm\Rnum{\theprvar}}$\rangle$.}\setcounter{subproblem}{0}\setcounter{subrproblem}{0}\;}
+\def\prpv{\medskip\noindent\stepcounter{prvar}{\bf Задача \theproblem \,$\bm\langle$\bracketspace{{\rm\Rnum{\theprvar}}}$\bm\rangle$. }\setcounter{subproblem}{0}\setcounter{subrproblem}{0}}
+\def\prv{\medskip\noindent\stepcounter{prvar}{\bf \theproblem\,$\bm\langle$\bracketspace{{\rm\Rnum{\theprvar}}}$\bm\rangle$}.\setcounter{subproblem}{0}\setcounter{subrproblem}{0} }
+
+
+\def\prpstar{\medskip\noindent\stepcounter{problem}{\bf Задача $\bf\theproblem^*$\negthickspace.  }\setcounter{subproblem}{0}\setcounter{subrproblem}{0} }
+\def\prdag{\medskip\noindent\stepcounter{problem}{\bf Задача $\theproblem^{^\dagger}$\negthickspace\,.  }\setcounter{subproblem}{0}\setcounter{subrproblem}{0} }
+
+
+
+\newcommand{\bracketspace}[1]{\phantom{(}\!\!{#1}\!\!\phantom{)}}
+
+\DeclareDocumentCommand{\Prpvar}{ O{null} O{} }{
+	\medskip\noindent\stepcounter{problem}\setcounter{prvar}{1}\setcounter{solvar}{1}{\bf Задача \theproblem
+	\,{\sf $\bm\langle$\bracketspace{{\rm\Rnum{\theprvar}}}$\bm\rangle$}
+	~\!\!\! \ifthenelse{\equal{#1}{null}}{\!}{{\sf(\bracketspace{#1})}}}.}
+
+\DeclareDocumentCommand{\Prp}{ O{null} O{null} }{\setcounter{subproblem}{0}\setcounter{subrproblem}{0}
+	\medskip\noindent\stepcounter{problem}\setcounter{prvar}{0}\setcounter{solvar}{0}{\bf Задача \theproblem
+	~\!\!\! \ifthenelse{\equal{#1}{null}}{\!}{{\sf(\bracketspace{#1})}}
+	 \ifthenelse{\equal{#2}{null}}{\!\!}{{\sf [\color{Gray444}\,\bracketspace{#2}\,]}}}.}
+
+\DeclareDocumentCommand{\Pr}{ O{null} O{null} }{\setcounter{subproblem}{0}\setcounter{subrproblem}{0}
+	\medskip\noindent\stepcounter{problem}\setcounter{prvar}{0}\setcounter{solvar}{0}{\bf\theproblem
+	~\!\!\! \ifthenelse{\equal{#1}{null}}{\!}{{\sf(\bracketspace{#1})}}
+	 \ifthenelse{\equal{#2}{null}}{\!\!}{{\sf [\color{Gray444}\,\bracketspace{#2}\,]}}}.}
+
+
+\DeclareDocumentCommand{\Prstar}{ O{null} O{null} }{\setcounter{subproblem}{0}\setcounter{subrproblem}{0}
+		\medskip\noindent\stepcounter{problem}\setcounter{prvar}{0}\setcounter{solvar}{0}{\bf$\mathbf{\theproblem^*}$
+		~\!\!\! \ifthenelse{\equal{#1}{null}}{\!}{{\sf(\bracketspace{#1})}}
+		 \ifthenelse{\equal{#2}{null}}{\!\!}{{\sf [\color{Gray444}\,\bracketspace{#2}\,]}}}.}
+
+
+\DeclareDocumentCommand{\Prps}{ O{null} O{null} }{\setcounter{subproblem}{0}\setcounter{subrproblem}{0}
+	\medskip\noindent\stepcounter{problem}\setcounter{prvar}{0}\setcounter{solvar}{0}{\bf Задача $\bm\theproblem^* $
+	~\!\!\! \ifthenelse{\equal{#1}{null}}{\!}{{\sf(\bracketspace{#1})}}
+	 \ifthenelse{\equal{#2}{null}}{\!\!}{{\sf [\color{Gray444}\,\bracketspace{#2}\,]}}}.
+}
+
+\DeclareDocumentCommand{\Prpd}{ O{null} O{null} }{\setcounter{subproblem}{0}\setcounter{subrproblem}{0}
+	\medskip\noindent\stepcounter{problem}\setcounter{prvar}{0}\setcounter{solvar}{0}{\bf Задача $\bm\theproblem^\dagger$
+	~\!\!\! \ifthenelse{\equal{#1}{null}}{\!}{{\sf(\bracketspace{#1})}}
+	 \ifthenelse{\equal{#2}{null}}{\!\!}{{\sf [\color{Gray444}\,\bracketspace{#2}\,]}}}.
+}
+
+
+\def\prend{
+	\medskip
+%	\bigskip
+}
+
+
+\def\prskip{
+	\smallskip
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EOF Problems macros  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\comments}[2][Комментарий]{
+\medskip
+	\noindent{\bf #1: }{\sl #2}
+%\medskip	
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Page style  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%прочее
+
+
+                                     %\fontseries{m}\selectfont
+\title{Макросы для работы с задачами}
+\author{Александр Рубцов \\ \texttt{\small\href{mailto:alex@rubtsov.su}{alex@rubtsov.su}}}
+
+\date{}
+
+\usepackage{indentfirst}
+
+\usepackage{minitoc}
+\usepackage{tocvsec2}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Отображение решений %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifsolshow
+%\solshowfalse
+\solshowtrue
+
+\usepackage{comment}
+\ifsolshow
+	\newenvironment{sol}
+			{	            
+				\bigskip
+				\setcounter{prvar}{0}\setcounter{subproblem}{0}\noindent\textbf{Решение.}\;}
+			{		
+			}    
+		 	\newenvironment{ukaz}
+				{	
+					\bigskip
+					\setcounter{prvar}{0}\setcounter{subproblem}{0}\noindent\textbf{Указания.}\;}
+				{		
+				}
+		 \newenvironment{crit}
+				{	        
+					\bigskip
+					\setcounter{prvar}{0}\setcounter{subproblem}{0}\noindent\textbf{Критерии.}\;}
+				{		
+				}
+	 	\newenvironment{discussion}
+			{	        
+				\bigskip
+				\setcounter{prvar}{0}\setcounter{subproblem}{0}\noindent\textbf{Рабочее обсуждение.}\;}
+			{		
+			}	
+	\else
+		\excludecomment{sol} 
+		\excludecomment{ukaz}
+		\excludecomment{crit}
+		\excludecomment{discussion}
+	\fi
+
+
+\usepackage{fancyvrb}
+
+
+\begin{document}
+	%\lstset{language=TeX}
+	\renewcommand{\partname}{}
+	\doparttoc
+
+
+\maketitle
+
+В этом файле приведены макросы для задач, который я использую для составления листков, контрольных, написания конспектов и книжек. Макросы находятся в стадии development уже довольно давно; аккуратно всё причесать и доработать весь функционал руки не доходят уже много лет, а коллеги время от времени спрашивают как сделать то или иное (например, ссылки на задачи), поэтому я решил выложить макросы в том виде, в котором они есть. В этом виде они были использованы для написания книжки и постоянно используются для составления листков, контрольных работ и подборок задач.
+
+
+\tableofcontents
+
+\newpage
+
+
+%\setcounter{section}{-1}
+
+
+\section{Основные макросы}
+
+\subsection{Задачи и их виды}
+
+В листках и контрольных стандартно используется нумерация задач жирным макросом
+
+\pr Найти сумму $1+2+\ldots+n$.
+
+\begin{Verbatim}[frame=single]
+\pr Найти сумму $1+2+\ldots+n$.
+\end{Verbatim}
+
+В конспектах лекций и книжках к задаче добавляется префикс
+
+\problem Найти сумму $1+2+\ldots+n$.
+
+\begin{Verbatim}[frame=single]
+\problem Найти сумму $1+2+\ldots+n$.
+\end{Verbatim}
+
+Можно создавать задачи разных видов (описывать их разными префиксами)
+
+\upr Найти сумму $1+2+\ldots+n$.
+
+\begin{Verbatim}[frame=single]
+\upr Найти сумму $1+2+\ldots+n$.
+\end{Verbatim}
+
+Для создания окружения используйте шаблон
+
+\begin{Verbatim}[frame=single]
+\newcounter{uproblem}
+\newenvironment{upr}[1][]{
+	\prtemplate[name={Упражнение},
+	 counter={uproblem}, #1]{}
+}{\medskip}	% отступ после окончания окружения
+\end{Verbatim}
+
+После создания шаблона можно использовать задачи как через команду, так и через окружение:
+
+\begin{Verbatim}[frame=single]
+\begin{upr}
+	Найти сумму $1+2+\ldots+n$.
+\end{upr}
+\upr Найти сумму $1+2+\ldots+n$.	
+\prend % отступ после задачи
+\end{Verbatim}
+
+
+\begin{upr}
+	Найти сумму $1+2+\ldots+n$.
+\end{upr}
+
+\upr Найти сумму $1+2+\ldots+n$.
+\prend % отступ после задачи
+
+Как видно из примеров, задачи и упражнения используют разные счётчики, поэтому нумеруются независимо.
+
+\subsection{Подзадачи}
+
+В макросах используются два вида подзадач. Первый~"--- для задач с несколькими различными подзадачами.
+
+\problem Пусть $f(x) = x^2$, $g(x) = x^3$
+
+\prsub Является ли $f(x)$ чётной функцией?
+
+\prsub Вычислите $f'(x)$ и $g'(x)$.
+
+\prend
+
+\begin{Verbatim}[frame=single]
+\problem Пусть $f(x) = x^2$, $g(x) = x^3$
+
+\prsub Является ли $f(x)$ чётной функцией?
+
+\prsub Вычислите $f'(x)$ и $g'(x)$.
+
+\prend	
+\end{Verbatim}
+
+
+Второй~"--- для задач с перечислением однотипных подзадач.
+
+
+\problem Для каждой функции $f(x)$ вычислите $f'(x)$:
+
+\prsubr $x$;\quad \prsubrinline $x^2$; \quad \prsubrinline $x^3$;
+
+\prend
+
+\begin{Verbatim}[frame=single]
+\problem Для каждой функции $f(x)$ вычислите $f'(x)$:
+
+\prsubr $x$;\quad \prsubrinline $x^2$; 
+\quad \prsubrinline $x^3$;
+
+\prend	
+\end{Verbatim}
+
+
+Команда \texttt{prsubr} делает отступ от предыдущей строки, а \texttt{prsubrinline} нет. Поэтому при перечислении подзадач в одной строке, нужно сначала использовать \texttt{prsubr}, а затем \texttt{prsubrinline}.
+
+\subsection{Пометки}
+
+Часто бывает нужно отметить задачи повышенной сложности звёздочкой или ввести други типовые пометки. В макросах уже реализованы следующие пометки
+
+\problem[type=star] Задача повышенной сложности
+
+\prsub[type=star] Пункт повышенной сложности
+
+\prsubr[type=star] подпункт повышенной сложности.
+
+\prsub[type=o] Пункт, который планируется разобрать
+
+\prsubr[type=o] подпункт; \prsubr[type=circ, display=inline] следующий подпункт.
+
+\prend
+
+\begin{Verbatim}[frame=single]
+\problem[type=star] Задача повышенной сложности
+
+\prsub[type=star] Пункт повышенной сложности
+
+\prsubr[type=star] подпункт повышенной сложности.
+
+\prsub[type=o] Пункт, который планируется разобрать
+
+\prsubr[type=o] подпункт; 
+\prsubr[type=circ, display=inline] следующий подпункт.
+
+\prend
+\end{Verbatim}
+
+
+\pru Для типичных задач и подзадач введены сокращения. 
+
+\prsubstar Подзадача
+
+\prsubru подподзадача;
+
+\prsubrstar подподзадача.
+
+
+\prsubu Подзадача \prsubruinline подподзадача.
+
+\prend
+
+\begin{Verbatim}[frame=single]
+\pru Для типичных задач и подзадач введены сокращения. 
+
+\prsubstar Подзадача
+
+\prsubru подподзадача;
+
+\prsubrstar подподзадача.
+
+
+\prsubu Подзадача \prsubruinline подподзадача.
+
+\prend	
+\end{Verbatim}
+
+
+Обратите внимание, что если вы используете сокращения, например, \texttt{prsubu}, то в них нельзя передавать другие вспомогательные аргументы. Так, \texttt{prsubu[display=inline]} не сработает.
+
+\subsection{Ссылки}
+
+Нумерация задач может меняться из-за добавления или удаления других задач. На задачи можно ссылаться, используя метки. 
+
+\problem[label=pr:labeled] Ответьте на следующие вопросы о функциях.
+
+\prsub[label=prsub:labeled1] Какие из следующих функций чётные:
+
+\prsubr $x$;\quad \prsubrinline $x^2$; \quad \prsubr[display=inline, type=o, label=prsubr:labeled1] $x^3$?
+
+\prsub[label=prsub:labeled2] Вычислите производные функций
+
+\prsubr[label=prsubr:labeled2] $\sin x$;\quad \prsubrinline $\sin^2 x$; \quad \prsubrinline $\cos 2x$.
+
+\prend
+
+\textbf{Указания:} в пункте \ref{pr:labeled}.\ref{prsub:labeled1}.\ref{prsubr:labeled1} функция не является чётной; в пункте \ref{pr:labeled}.\ref{prsub:labeled2}.\ref{prsubr:labeled2} ответ $\cos x$.
+
+\begin{Verbatim}[frame=single]
+\problem[label=pr:labeled] Ответьте на следующие вопросы 
+о функциях.
+
+\prsub[label=prsub:labeled1] Какие из следующих функций чётные:
+
+\prsubr $x$;\quad \prsubrinline $x^2$; \quad 
+\prsubr[display=inline, type=o, label=prsubr:labeled1] $x^3$?
+
+\prsub[label=prsub:labeled2] Вычислите производные функций
+
+\prsubr[label=prsubr:labeled2] $\sin x$;
+\quad \prsubrinline $\sin^2 x$; 
+\quad \prsubrinline $\cos 2x$.
+
+\prend
+
+\textbf{Указания:} в пункте 
+\ref{pr:labeled}.\ref{prsub:labeled1}.\ref{prsubr:labeled1}
+функция не является чётной; в пункте 
+\ref{pr:labeled}.\ref{prsub:labeled2}.\ref{prsubr:labeled2} 
+ответ $\cos x$.
+\end{Verbatim}
+
+
+\subsection{Основные опции макросов}
+
+Повторим кратко вышеперечисленное. Стандартные задачи вызываются командой или окружением \texttt{problem}, задачи без номеров~"--- командой \texttt{pr}. Можно ввести задачи отдельных типов, таких как \texttt{upr} и \texttt{quiz} уже включённых в макросы, для которых всё работает так же как и для стандартных задач. Для подзадач используйте команды \texttt{prsub} или \texttt{prsubr}, в зависимости от типа подзадач. Во всех этих командах доступны следующие опции:
+
+\begin{itemize}
+	\item[\texttt{type}] значение \texttt{star} для пометки~$*$ и \texttt{o} для пометки~$\circ$ 
+	\item[\texttt{label}] значение задаёт стандартную метку (соответствующую счётчику задачи или подзадачи), на которую потом можно сослаться через \texttt{ref}
+	\item[\texttt{display}] поставьте значение \texttt{inline}, если требуется перечислить несколько пунктов \texttt{prsubr} в одной строке (только для \texttt{prsubr}). 
+\end{itemize}
+
+При введении нового типа задач выбирается счётчик. Стандартный счётчик называется \texttt{problem}. Выставить его значение (часто полезно обнулить счётчик в новом разделе) можно с помощью команды
+
+\begin{Verbatim}[frame=single]
+\setcounter{problem}{2}
+\problem Это задача №3.
+\end{Verbatim}
+
+\setcounter{problem}{2}
+\problem Это задача №3.
+
+\section{Дополнительные макросы}
+
+Макросы в этом разделе полезны при работе над контрольными. Они сделаны отдельно от основных макросов по историческим причинам: основные макросы были сделаны для работы над книжкой, а на добавление функционала для контрольных не хватило сил. Фактически в дополнительных макросах нельзя только делать ссылки на задачи; при этом макросы для подазадач используются из основных макросов.
+
+
+\prp Это задача с префиксом, но без функционала макроса. Команда осталась по историческим причинам
+
+\begin{Verbatim}[frame=single]
+\prp Это задача с префиксом, но без функционала макроса. 
+Команда осталась по историческим причинам
+\end{Verbatim}
+
+\subsection{Макросы для контрольных}
+
+\Pr[4] В контрольных мы часто используем задачи с разной стоимостью в баллах.
+Стоимость указана в скобках.
+
+
+\begin{Verbatim}[frame=single]
+\Pr[4] В контрольных мы часто используем задачи с разной 
+стоимостью в баллах. Стоимость указана в скобках.	
+\end{Verbatim}
+
+При составлении контрольной или файла с подборкой задач для курса удобно указывать метаданные
+
+\Prp[4-6][А.Р.] Эту задачу добавил преподаватель А.Р. Стоимость он оценивает от 4 до 6 баллов. Как видно у макроса есть некоторые проблемы с пробелами; решить их не получилось.
+
+\Pr[4-6][А.Р.] Для сокращённого макроса тоже работает. Второй аргумент с мета-данными можно опускать.
+
+\begin{Verbatim}[frame=single]
+\Prp[4-6][А.Р.] Эту задачу добавил преподаватель А.Р. 
+Стоимость он оценивает от 4 до 6 баллов. 
+Как видно у макроса есть некоторые проблемы с пробелами;
+ решить их не получилось.
+
+\Pr[4-6][А.Р.] Для сокращённого макроса тоже работает. 
+Второй аргумент с мета-данными можно опускать.
+\end{Verbatim}
+
+Также добавлен функционал для работы с задачами с вариантами (используется при составлении контрольных).
+
+\Prpvar[4-6] Это первый вариант задачи.
+
+\prpv Это второй вариант задачи
+
+\Prp[3] Продифференцируйте функцию
+
+\prv $\sin x$
+
+\prv $\cos x$
+
+\prv $\tg x$
+
+
+\begin{Verbatim}[frame=single]
+\Prpvar[4-6] Это первый вариант задачи.
+
+\prpv Это второй вариант задачи
+
+\Prp[3] Продифференцируйте функцию
+
+\prv $\sin x$
+
+\prv $\cos x$
+
+\prv $\tg x$
+\end{Verbatim}
+
+\subsection{Обсуждение задач и решения}
+
+В этом разделе приведены несколько дополнительных макросов, относящихся к обсуждению задач и записи решений. При совместной работе над задачами удобно отдельно выделять обсуждения
+
+\Prp[3] Продифференцируйте функцию
+
+\prv $\sin x$
+
+\prv $\cos x$
+
+\prv $\tg x$
+
+\comments[А.Р.]{Кто добавил эту задачу? Не забывайте про метаданные! Варианты неравноценны по сложности}
+
+
+\begin{Verbatim}[frame=single]
+\comments[А.Р.]{Кто добавил эту задачу? 
+Не забывайте про метаданные! 
+Варианты неравноценны по сложности}	
+\end{Verbatim}
+
+В макросе для записи решений происходит обнуление всех счётчиков, относящихся к задаче.
+
+\begin{sol}
+	Приведём только ответы: 
+	
+	\prv $\cos x$; 
+	
+	\prv $- \sin x$; 
+	
+	\prv $\displaystyle\frac{1}{\cos^2 x}$.
+\end{sol}
+
+\begin{Verbatim}[frame=single]
+\begin{sol}
+	Приведём только ответы: 
+	
+	\prv $\cos x$; 
+	
+	\prv $- \sin x$; 
+	
+	\prv $\displaystyle\frac{1}{\cos^2 x}$.
+\end{sol}
+\end{Verbatim}
+
+
+
+Решения можно убрать из файла, путём переключения макросов. По-умолчанию отображение решений включено:
+
+\begin{Verbatim}[frame=single]
+\newif\ifsolshow
+%\solshowfalse
+\solshowtrue
+\end{Verbatim}
+
+Замена параметра исключает решения из файла:
+\begin{Verbatim}[frame=single]
+\newif\ifsolshow
+\solshowfalse
+%\solshowtrue	
+\end{Verbatim}
+
+Так можно сразу подготовить для студентов вариант с решениями, а в версии для контрольной отключить отображение решений.
+
+Мы публикуем авторские решения и критерии проверки после контрольных. Для файла с критериями мы используем окружения для указаний, описания критериев проверки и рабочих обсуждений критериев, аналогичные \texttt{sol}: \texttt{ukaz}, \texttt{crit}, \texttt{discussion}.
+
+
+\end{document}
+
+\begin{Verbatim}[frame=single]
+	
+\end{Verbatim}
